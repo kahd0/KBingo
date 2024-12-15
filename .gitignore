@@ -1,0 +1,19 @@
+# Ambientes Virtuais
+*.venv/
+*.env/
+pipfile.lock
+
+# Arquivos Temporários do Sistema
+*.pyc
+__pycache__/
+*.log
+
+# Configurações do Editor
+.vscode/
+.idea/
+
+# Arquivos de Dados e Bancos de Dados Locais
+data/*.db
+
+# Outros arquivos não necessários no controle de versão
+assets/*.png
