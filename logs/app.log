@@ -1,8 +1,0 @@
-2024-12-16 11:44:40,476 - INFO - Inicializando o banco de dados.
-2024-12-16 11:44:41,173 - INFO - Banco de dados inicializado com sucesso.
-2024-12-16 11:44:53,083 - INFO - Tentativa de login do usuário: admin
-2024-12-16 11:44:53,418 - INFO - Login bem-sucedido para admin com papel adm.
-2024-12-16 11:45:24,360 - INFO - Inicializando o banco de dados.
-2024-12-16 11:45:25,167 - INFO - Banco de dados inicializado com sucesso.
-2024-12-16 11:45:29,637 - INFO - Tentativa de login do usuário: operador
-2024-12-16 11:45:29,973 - INFO - Login bem-sucedido para operador com papel op.
