@@ -5,6 +5,7 @@ from utils.helpers import centralizeWindow
 from utils.logging import logInfo, logError
 from controllers.userController import UserController
 from controllers.configController import ConfigController
+from controllers.bingoController import BingoController
 
 
 
@@ -13,7 +14,7 @@ class MainView(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("KBingo - Gerenciador de Bingos")
-        centralizeWindow(self, 800, 600)
+        centralizeWindow(self, 1200, 600)
 
 
         # Bloqueia a janela até que o login seja concluído
@@ -122,7 +123,14 @@ class MainView(ctk.CTk):
 
 
     def onManageBingos(self):
-        print("Gerenciar Bingos - Em Desenvolvimento")
+        """Abre o Gerenciador de Bingos."""
+        # Limpa o conteúdo principal
+        for widget in self.mainArea.winfo_children():
+            widget.destroy()
+
+        # Carrega o Gerenciamento de Bingos
+        self.bingoController = BingoController(self.mainArea)
+        self.bingoController.pack(fill="both", expand=True)
 
     def onSelectBingo(self):
         # Simula a seleção de um bingo (futuramente, isso pode ser substituído por um dialog ou combobox)
