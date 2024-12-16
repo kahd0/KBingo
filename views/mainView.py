@@ -1,9 +1,10 @@
 import customtkinter as ctk
 from views.loginView import LoginView
-from settings import configureTheme, FONT_NORMAL, FONT_TITLE, FONT_SMALL
+from settings import FONT_NORMAL, FONT_TITLE, FONT_SMALL
 from utils.helpers import centralizeWindow
 from utils.logging import logInfo, logError
 from controllers.userController import UserController
+from controllers.configController import ConfigController
 
 
 
@@ -14,8 +15,6 @@ class MainView(ctk.CTk):
         self.title("KBingo - Gerenciador de Bingos")
         centralizeWindow(self, 800, 600)
 
-        # Configuração do tema
-        configureTheme()
 
         # Bloqueia a janela até que o login seja concluído
         self.createWidgets()
@@ -137,7 +136,14 @@ class MainView(ctk.CTk):
         print("Iniciar Partida - Em Desenvolvimento")
 
     def onSettings(self):
-        print("Configurações - Em Desenvolvimento")
+        """Abre a interface de configurações."""
+        # Limpa o conteúdo principal
+        for widget in self.mainArea.winfo_children():
+            widget.destroy()
+
+        # Carrega as configurações
+        self.configController = ConfigController(self.mainArea)
+        self.configController.pack(fill="both", expand=True)
 
     def onReports(self):
         print("Relatórios - Em Desenvolvimento")

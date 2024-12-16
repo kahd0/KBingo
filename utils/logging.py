@@ -1,7 +1,7 @@
+# logging.py
 import logging
 import os
-from variables import LOG_DIR
-from settings import LOG_LEVEL
+from variables import LOG_DIR, LOG_LEVEL  # Importa LOG_LEVEL daqui
 
 # Configuração de Logs
 if not os.path.exists(LOG_DIR):

@@ -1,8 +1,8 @@
 import customtkinter as ctk
 from utils.helpers import centralizeWindow
-from settings import configureTheme, FONT_NORMAL, FONT_TITLE
+from settings import FONT_NORMAL, FONT_TITLE
 from utils.logging import logInfo, logError
-from variables import LOGO_PATH
+from variables import LOGO_PATH, ICON_PATH
 from PIL import Image
 from utils.database import validateLogin
 
@@ -14,10 +14,13 @@ class LoginView(ctk.CTkToplevel):
         self.mainView = mainView
         self.title("Login")
         centralizeWindow(self, 400, 400)
-        self.resizable(False,False)
+        self.resizable(False, False)
 
-        # Configuração do tema
-        configureTheme()
+        # Aplicar ícone
+        try:
+            self.wm_iconbitmap(ICON_PATH)  # Define o ícone
+        except Exception as e:
+            print(f"Erro ao carregar ícone: {e}")
 
         # Torna a janela modal
         self.transient(mainView)
