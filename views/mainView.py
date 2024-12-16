@@ -1,7 +1,10 @@
 import customtkinter as ctk
 from views.loginView import LoginView
-from settings import configureTheme
+from settings import configureTheme, FONT_NORMAL, FONT_TITLE
 from utils.helpers import centralizeWindow
+from utils.logging import logInfo, logError
+
+
 
 
 class MainView(ctk.CTk):
@@ -19,7 +22,7 @@ class MainView(ctk.CTk):
 
     def createWidgets(self):
         # Exibe uma mensagem inicial enquanto aguarda o login
-        self.infoLabel = ctk.CTkLabel(self, text="Aguardando Login...", font=("Arial", 14))
+        self.infoLabel = ctk.CTkLabel(self, text="Aguardando Login...", font=FONT_NORMAL)
         self.infoLabel.pack(pady=100)
         
         # Botão para abrir a tela de login
@@ -39,7 +42,7 @@ class MainView(ctk.CTk):
             self.loginButton.destroy()
 
         # Atualiza a interface com base no papel do usuário
-        self.infoLabel = ctk.CTkLabel(self, text=f"Bem-vindo, {userName} ({role.upper()})!", font=("Arial", 16))
+        self.infoLabel = ctk.CTkLabel(self, text=f"Bem-vindo, {userName} ({role.upper()})!", font=FONT_TITLE)
         self.infoLabel.pack(pady=20)
 
         if role == "adm":
@@ -51,7 +54,7 @@ class MainView(ctk.CTk):
 
     def createAdminContent(self):
         # Conteúdo específico para administradores
-        self.adminLabel = ctk.CTkLabel(self, text="Área de Administrador", font=("Arial", 14))
+        self.adminLabel = ctk.CTkLabel(self, text="Área de Administrador", font=FONT_NORMAL)
         self.adminLabel.pack(pady=10)
 
         self.exitButton = ctk.CTkButton(self, text="Sair", command=self.closeApp)
@@ -59,7 +62,7 @@ class MainView(ctk.CTk):
 
     def createOperatorContent(self):
         # Conteúdo específico para operadores
-        self.operatorLabel = ctk.CTkLabel(self, text="Área de Operador (Acesso Limitado)", font=("Arial", 14))
+        self.operatorLabel = ctk.CTkLabel(self, text="Área de Operador (Acesso Limitado)", font=FONT_NORMAL)
         self.operatorLabel.pack(pady=10)
 
         self.exitButton = ctk.CTkButton(self, text="Sair", command=self.closeApp)

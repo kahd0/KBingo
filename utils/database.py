@@ -1,7 +1,8 @@
 import sqlite3
 from variables import DB_PATH
 import bcrypt
-from settings import logInfo, logError
+from utils.logging import logInfo, logError
+
 
 
 def initializeDatabase():

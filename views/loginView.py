@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from utils.helpers import centralizeWindow
-from settings import configureTheme, logInfo, logError
+from settings import configureTheme, FONT_NORMAL, FONT_TITLE
+from utils.logging import logInfo, logError
 from variables import LOGO_PATH
 from PIL import Image
 from utils.database import validateLogin
@@ -34,7 +35,7 @@ class LoginView(ctk.CTkToplevel):
             print(f"Erro ao carregar a logo: {e}")
 
         # Título
-        self.labelTitle = ctk.CTkLabel(self, text="Faça Login", font=("Arial", 20))
+        self.labelTitle = ctk.CTkLabel(self, text="Faça Login", font=FONT_TITLE)
         self.labelTitle.pack(pady=10)
 
         # Campo de Usuário
