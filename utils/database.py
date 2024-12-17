@@ -45,6 +45,20 @@ def initializeDatabase():
         """)
         logInfo("Tabela 'bingos' verificada/criada com sucesso.")
 
+        # Tabela de Cartelas
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cartelas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                bingo_id INTEGER NOT NULL,
+                numeros TEXT NOT NULL,
+                lote INTEGER NOT NULL,
+                numero_cartela TEXT NOT NULL UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (bingo_id) REFERENCES bingos (id)
+            )
+        """)
+        logInfo("Tabela 'cartelas' verificada/criada com sucesso.")
+
         # Commit e fechar conexão
         connection.commit()
         connection.close()
@@ -229,3 +243,92 @@ def deleteBingo(bingoId):
         logInfo(f"Bingo com ID {bingoId} excluído com sucesso.")
     except Exception as e:
         logError(f"Erro ao excluir bingo com ID {bingoId}: {e}")
+
+
+def getLastCardNumber(bingo_id):
+    """Busca o último número de cartela e lote para um bingo específico."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT numero_cartela FROM cartelas WHERE bingo_id = ? ORDER BY id DESC LIMIT 1
+    """, (bingo_id,))
+    result = cursor.fetchone()
+    connection.close()
+
+    if result:
+        numero, lote = map(int, result[0].split("-"))
+        return numero, lote
+    return 0, 0
+
+def isCardUnique(bingo_id, card):
+    """Verifica se a cartela já existe no banco de dados."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    card_json = json.dumps(card)
+
+    cursor.execute("""
+        SELECT COUNT(*) FROM cartelas WHERE bingo_id = ? AND numeros = ?
+    """, (bingo_id, card_json))
+    exists = cursor.fetchone()[0] > 0
+
+    connection.close()
+    return not exists
+
+def saveCards(bingo_id, cards):
+    """Salva uma lista de cartelas no banco de dados."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    for card in cards:
+        cursor.execute("""
+            INSERT INTO cartelas (bingo_id, numeros, lote, numero_cartela)
+            VALUES (?, ?, ?, ?)
+        """, (bingo_id, card["numeros"], card["lote"], card["numero_cartela"]))
+
+    connection.commit()
+    connection.close()
+
+
+def getBingoById(bingo_id):
+    """Busca informações de um bingo pelo ID."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id, name, date, cartela_value, responsaveis, prizes
+        FROM bingos
+        WHERE id = ?
+    """, (bingo_id,))
+    row = cursor.fetchone()
+    connection.close()
+
+    if row:
+        return {
+            "id": row[0],
+            "name": row[1],
+            "date": row[2],
+            "cartela_value": row[3],
+            "responsaveis": row[4],
+            "prizes": row[5]
+        }
+    return None
+
+def getCardStats(bingo_id):
+    """Retorna o total de cartelas e o lote atual de um bingo."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    # Conta as cartelas e pega o maior lote
+    cursor.execute("""
+        SELECT COUNT(*), MAX(lote)
+        FROM cartelas
+        WHERE bingo_id = ?
+    """, (bingo_id,))
+    result = cursor.fetchone()
+    connection.close()
+
+    total_cartelas = result[0] if result[0] else 0
+    lote_atual = result[1] if result[1] else 0
+
+    return total_cartelas, lote_atual
