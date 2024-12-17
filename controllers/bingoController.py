@@ -125,6 +125,7 @@ class BingoController(ctk.CTkFrame):
 
             if not all([name, date, time, cartelaValue, responsaveis, self.prizeList]):
                 logError("Erro: Todos os campos são obrigatórios!")
+                messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
                 return
 
             addBingo(name, f"{date} {time}", float(cartelaValue), responsaveis, self.prizeList)
@@ -300,6 +301,7 @@ class BingoController(ctk.CTkFrame):
 
         if not all([name, date, time, cartelaValue, responsaveis]):
             logError("Erro: Todos os campos são obrigatórios!")
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
             return
 
         try:

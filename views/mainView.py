@@ -10,7 +10,8 @@ from controllers.configController import ConfigController
 from controllers.bingoController import BingoController
 from controllers.selectBingoController import SelectBingoController
 from controllers.generateCardsController import GenerateCardsController
-
+from controllers.export.exportConfigController import ExportConfigController
+from controllers.export.exportExcelController import ExportExcelController
 
 
 
@@ -168,7 +169,34 @@ class MainView(ctk.CTk):
         print("Iniciar Partida - Em Desenvolvimento")
 
     def onExportCards(self):
-        print("Exportar Cartelas - Em Desenvolvimento")
+        """Abre o modal de configuração para exportação de cartelas."""
+        def handleExportConfig(config):
+            """Recebe as configurações do modal e inicia a exportação."""
+            exportType = config["exportType"]
+            if exportType == "Excel":
+                print("Exportar para Excel selecionado.")
+                # Chamar função para exportar Excel
+            elif exportType == "PDF":
+                print(f"Exportar PDF com {config['cardsPerPage']} cartelas/página, orientação: {config['pageOrientation']}")
+                # Chamar função para exportar PDF com as configurações
+
+        ExportConfigController(self, callback=handleExportConfig)
+
+    def onExportCards(self):
+        """Abre o modal de configuração e inicia exportação de cartelas."""
+        def handleExportConfig(config):
+            exportType = config["exportType"]
+            if exportType == "Excel":
+                bingo_id = self.getSelectedBingoId()
+                if not bingo_id:
+                    messagebox.showerror("Erro", "Nenhum bingo selecionado!")
+                    return
+                ExportExcelController(bingo_id).export()
+            elif exportType == "PDF":
+                # Chamar lógica de exportação para PDF (futura implementação)
+                pass
+
+        ExportConfigController(self, callback=handleExportConfig)
 
     def onCreateCards(self):
         """Solicita ao usuário o número de cartelas e gera as cartelas."""
@@ -222,6 +250,8 @@ class MainView(ctk.CTk):
             allBingos = getAllBingos()
             # Chama diretamente o método estático para atualizar os detalhes
             SelectBingoController.displayBingoDetails(self.mainArea, selectedBingoName, allBingos)
+
+
 
 
     def onSettings(self):

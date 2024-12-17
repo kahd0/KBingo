@@ -332,3 +332,22 @@ def getCardStats(bingo_id):
     lote_atual = result[1] if result[1] else 0
 
     return total_cartelas, lote_atual
+
+
+def getAllCards(bingo_id):
+    """Busca todas as cartelas de um bingo específico."""
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT numero_cartela, numeros
+        FROM cartelas
+        WHERE bingo_id = ?
+    """, (bingo_id,))
+    rows = cursor.fetchall()
+    connection.close()
+
+    return [
+        {"numero_cartela": row[0], "numeros": json.loads(row[1])}
+        for row in rows
+    ]
